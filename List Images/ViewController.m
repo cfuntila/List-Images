@@ -14,7 +14,7 @@
 @implementation ViewController
 
 - (void)viewDidLoad {
-    [super viewDidLoad];    
+    [super viewDidLoad];
 }
 
 - (NSInteger)tableView:(nonnull UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
@@ -31,8 +31,8 @@
     NSString* imageNumber = [@(randomNumber) stringValue];
 
 //    Choose between small (20kb) and large (>=10MB) images
-        NSString *imageName = [NSString stringWithFormat:@"%@%@", @"small", imageNumber];
-//    NSString *imageName = [NSString stringWithFormat:@"%@%@", @"large", imageNumber];
+//        NSString *imageName = [NSString stringWithFormat:@"%@%@", @"small", imageNumber];
+    NSString *imageName = [NSString stringWithFormat:@"%@%@", @"large", imageNumber];
 
 //    create custom thread vs use one of gcd's existing background threads 
     //    dispatch_queue_t loadQueue = dispatch_queue_create("image loader", NULL);
