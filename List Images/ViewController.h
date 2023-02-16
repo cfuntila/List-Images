@@ -9,11 +9,7 @@
 
 @interface ViewController : UIViewController <UITableViewDataSource, UITableViewDelegate >
 
-@property (retain, nonatomic) NSArray *imagesArray;
-
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
-
-
 
 @end
 

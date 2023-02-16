@@ -24,29 +24,33 @@
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"imageCell"];
+    cell.tag = indexPath.row;
     
     NSString *rowString=[NSString stringWithFormat:@"%ld",indexPath.row + 1];
     int randomNumber = arc4random_uniform(4) + 1;
     NSLog(@"%u", randomNumber);
     NSString* imageNumber = [@(randomNumber) stringValue];
 
-//    Choose between small (20kb) and large (>=10MB) images
+//    Choose between small (20kb) and large (>=10MB) images:
+    
 //        NSString *imageName = [NSString stringWithFormat:@"%@%@", @"small", imageNumber];
     NSString *imageName = [NSString stringWithFormat:@"%@%@", @"large", imageNumber];
 
-//    create custom thread vs use one of gcd's existing background threads 
-    //    dispatch_queue_t loadQueue = dispatch_queue_create("image loader", NULL);
+//    create custom thread vs use one of gcd's existing background threads:
     
-//    dispatch_async(loadQueue, ^{
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^
+//    dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH,  0ul);
+//    dispatch_async(queue, ^{
+
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^
                 {
-        NSURL *fileUrl = [[NSBundle mainBundle] URLForResource:imageName withExtension:@"jpg"];
-        
-        NSData *data = [NSData dataWithContentsOfURL:fileUrl];
+        NSURL *imageUrl = [[NSBundle mainBundle] URLForResource:imageName withExtension:@"jpg"];
+        NSData *data = [NSData dataWithContentsOfURL:imageUrl];
+        UIImage *image = [UIImage imageWithData:data];
         
         dispatch_async(dispatch_get_main_queue(), ^{
-            UIImage *image = [UIImage imageWithData:data];
-            cell.imageView.image = image;
+            UITableViewCell *currentCell = [tableView cellForRowAtIndexPath:indexPath];
+            currentCell.imageView.image = image;
+            [currentCell setNeedsLayout];
         });
     });
 
