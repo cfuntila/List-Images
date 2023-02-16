@@ -29,9 +29,16 @@
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"imageCell"];
     
     NSString *rowString=[NSString stringWithFormat:@"%ld",indexPath.row + 1];
-    NSString *imageName = [NSString stringWithFormat:@"%@%@", @"large", rowString];
-    
-//    dispatch_queue_t loadQueue = dispatch_queue_create("image loader", NULL);
+    int randomNumber = arc4random_uniform(4) + 1;
+    NSLog(@"%u", randomNumber);
+    NSString* imageNumber = [@(randomNumber) stringValue];
+
+//    Choose between small (20kb) and large (>=10MB) images
+    //    NSString *imageName = [NSString stringWithFormat:@"%@%@", @"small", imageNumber];
+    NSString *imageName = [NSString stringWithFormat:@"%@%@", @"large", imageNumber];
+
+//    create custom thread vs use one of gcd's existing background threads 
+    //    dispatch_queue_t loadQueue = dispatch_queue_create("image loader", NULL);
     
 //    dispatch_async(loadQueue, ^{
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^
