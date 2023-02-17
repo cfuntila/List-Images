@@ -22,9 +22,7 @@
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"imageCell"];
-    cell.tag = indexPath.row;
     
     NSString *rowString=[NSString stringWithFormat:@"%ld",indexPath.row + 1];
     int randomNumber = arc4random_uniform(4) + 1;
@@ -35,27 +33,26 @@
     
 //        NSString *imageName = [NSString stringWithFormat:@"%@%@", @"small", imageNumber];
     NSString *imageName = [NSString stringWithFormat:@"%@%@", @"large", imageNumber];
-
-//    create custom thread vs use one of gcd's existing background threads:
     
-//    dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH,  0ul);
-//    dispatch_async(queue, ^{
-
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^
                 {
         NSURL *imageUrl = [[NSBundle mainBundle] URLForResource:imageName withExtension:@"jpg"];
         NSData *data = [NSData dataWithContentsOfURL:imageUrl];
         UIImage *image = [UIImage imageWithData:data];
         
-        dispatch_async(dispatch_get_main_queue(), ^{
-            UITableViewCell *currentCell = [tableView cellForRowAtIndexPath:indexPath];
-            currentCell.imageView.image = image;
-            [currentCell setNeedsLayout];
-        });
+        [image prepareForDisplayWithCompletionHandler:^(UIImage * _Nullable theImage) {
+            
+            dispatch_async(dispatch_get_main_queue(), ^{
+                if ( [[tableView indexPathsForVisibleRows] containsObject:indexPath]) {
+                    UITableViewCell *currentCell = [tableView cellForRowAtIndexPath:indexPath];
+                    currentCell.imageView.image = image;
+                    [currentCell setNeedsLayout];
+                }
+            });
+        }];
     });
 
     return cell;
-    
 }
 
 @end
